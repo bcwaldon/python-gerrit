@@ -1,1 +1,0 @@
-from gerrit import Gerrit

@@ -8,7 +8,7 @@ class BaseModel(object):
             setattr(self, k, v)
 
     def __setattr__(self, key, value):
-        if key in self.__class__.attributes or key in __dict__:
+        if key in self.__class__.attributes or key in self.__dict__:
             self.__dict__[key] = value
         else:
             raise AttributeError(key)
@@ -23,9 +23,9 @@ class BaseModel(object):
                 raise AttributeError(key)
 
     def __repr__(self):
-        attributes = ['%s=%s' % (key, getattr(self, key)) \
-                for key in self.__class__.attributes]
-        return '<%s %s>' % (self.__class__.__name__, ' '.join(attributes))
+        key = self.__class__.attributes[0]
+        value = getattr(self, key)
+        return '<%s %s=%s>' % (self.__class__.__name__, key, value)
 
 
 class Project(BaseModel):
@@ -33,6 +33,11 @@ class Project(BaseModel):
     attributes = ('name', 'description')
 
 
-class Review(BaseModel):
+class Change(BaseModel):
 
-    attributes = ('review_id', 'sort_key')
+    attributes = ('change_id', 'sort_key')
+
+
+class ChangeDetails(BaseModel):
+
+    attributes = ('change_id', 'sort_key', 'project')

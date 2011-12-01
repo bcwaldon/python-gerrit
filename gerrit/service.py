@@ -2,8 +2,6 @@
 import httplib2
 import json
 
-from gerrit import model
-
 
 def jsonrpc(url, method, args):
     http = httplib2.Http()
@@ -30,22 +28,16 @@ class ChangeListService(BaseService):
 
     def allQueryNext(self, search='', last_seen='z', page_size=25):
         data = self._call('allQueryNext', search, last_seen, page_size)
-        reviews = data['changes']
-        return [ChangeListService._decode_review(review) for review in reviews]
+        return data['changes']
 
-    @staticmethod
-    def _decode_review(data):
-        return model.Review(review_id=data['id']['id'],
-                            sort_key=data['sortKey'])
+
+class ChangeDetailService(BaseService):
+
+    def changeDetail(self, change_id):
+        return self._call('changeDetail', {'id': change_id})['change']
 
 
 class ProjectAdminService(BaseService):
 
     def visibleProjects(self):
-        data = self._call('visibleProjects')
-        return [ProjectAdminService._decode_project(datum) for datum in data]
-
-    @staticmethod
-    def _decode_project(data):
-        return model.Project(name=data['name']['name'],
-                             description=data['description'])
+        return self._call('visibleProjects')

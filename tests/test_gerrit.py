@@ -17,7 +17,7 @@ def setup_module():
     fixtures.setup()
 
 def gerrit():
-    return Client('http://localhost:8080')
+    return Client(fixtures.GERRIT_URL)
 
 def authenticated_gerrit():
     client = gerrit()

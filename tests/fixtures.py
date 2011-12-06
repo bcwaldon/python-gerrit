@@ -5,11 +5,13 @@ from gerrit.util import reset_dir, execute_assert
 from gerrit import db, raw
 
 assert os.getenv('GERRIT_GIT')
+assert os.getenv('GERRIT_URL')
 assert os.getenv('GERRIT_DB')
 assert os.getenv('GERRIT_PATH')
 assert os.getenv('GERRIT_USERNAME')
 
 TEST_PROJECT = 'python-gerrit-test-project'
+GERRIT_URL = os.getenv('GERRIT_URL')
 GERRIT_GIT = os.getenv('GERRIT_GIT').rstrip('/') + '/' + TEST_PROJECT
 GERRIT_DB = os.getenv('GERRIT_DB')
 GERRIT_PATH = os.getenv('GERRIT_PATH')

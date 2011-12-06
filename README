@@ -41,6 +41,7 @@ Tests expects the following environment variables to be set:
     * GERRIT_PATH - path to a Gerrit installation
     * GERRIT_DB - sqlalchemy URL to the Gerrit database
     * GERRIT_GIT - URL to the Gerrit git repository
+    * GERRIT_URL - URL to the Gerrit HTTP server
     * GERRIT_USERNAME - a user the suite with interact as
 
 Check that the provided user has all the privileges required to

@@ -1,6 +1,4 @@
 
-from __future__ import print_function
-
 from pipes import quote
 import os.path
 from gerrit.util import reset_dir, execute_assert
@@ -63,10 +61,63 @@ FILE3_b2 = """
 third file
 """
 
+class ChangeCwd(object):
+    def __init__(self, path):
+        self.path = path
+
+    def __enter__(self):
+        self.old_path = os.getcwd()
+        os.chdir(self.path)
+        return self
+
+    def __exit__(self, *args):
+        os.chdir(self.old_path)
+
+class TestGitRepo(object):
+    def __init__(self, path, remote=None):
+        self.path = path
+        self.remote = remote
+
+    def _execute(self, *args):
+        execute_assert(' '.join(quote(x) for x in args))
+
+    def clear(self):
+        reset_dir(self.path)
+        with ChangeCwd(self.path):
+            self._execute('git', 'init')
+
+    def set_content(self, **files):
+        with ChangeCwd(self.path):
+            for path, content in files.items():
+                file = open(path, 'w')
+                file.write(content)
+                file.close()
+                self._execute('git', 'add', path)
+
+    def commit(self, message, amend = False):
+        with ChangeCwd(self.path):
+            if amend:
+                self._execute('git', 'commit', '--amend', '-m', message)
+            else:
+                self._execute('git', 'commit', '-m', message)
+
+    def make_branch(self, branch):
+        with ChangeCwd(self.path):
+            self._execute('git', 'checkout', '-b', branch)
+
+    def checkout_branch(self, branch):
+        with ChangeCwd(self.path):
+            self._execute('git', 'checkout', branch)
+
+    def push_to_gerrit(self):
+        with ChangeCwd(self.path):
+            self._execute('git', 'push', self.remote, 'HEAD:refs/for/master')
+
 def set_content(path, content):
     open(path, 'w').write(content)
 
 def setup():
+    # Recreating Gerrit project
     db_client = db.Client(GERRIT_DB)
     raw_client = raw.Client(GERRIT_PATH)
     
@@ -79,43 +130,31 @@ def setup():
     raw_client.create_project(TEST_PROJECT)
 
     # Creating git repo
-    reset_dir(FIXTURE_DIR)
-    os.chdir(FIXTURE_DIR)
-    execute_assert('git init')
-    git_url = quote(GERRIT_GIT)
+    repo = TestGitRepo(FIXTURE_DIR, GERRIT_GIT)
+    repo.clear()
 
     # Adding some random commits
-    set_content(FILE1, FILE1_i)
-    set_content(FILE2, FILE2_i)
-    execute_assert('git add .')
-    execute_assert('git commit -m ' + quote(COMMIT_i))
+    repo.set_content(FILE1 = FILE1_i,
+                     FILE2 = FILE2_i)
+    repo.commit(COMMIT_i)
 
-    print('[1/4] Pushing')
-    execute_assert('git push %s HEAD:refs/for/master' % git_url)
+    repo.push_to_gerrit()
 
-    execute_assert('git checkout -b b1')
-    set_content(FILE1, FILE1_b1)
-    execute_assert('git commit -am ' + quote(COMMIT_b1))
+    repo.make_branch('b1')
+    repo.set_content(FILE1 = FILE1_b1)
+    repo.commit(COMMIT_b1)
+    repo.push_to_gerrit()
 
-    print('[2/4] Pushing')
-    execute_assert('git push %s HEAD:refs/for/master' % git_url)
+    repo.set_content(FILE1 = FILE1_b1_2)
+    repo.commit(COMMIT_b1_2, amend = True)
+    repo.push_to_gerrit()
 
-    set_content(FILE1, FILE1_b1_2)
-    execute_assert('git commit --amend -am ' + quote(COMMIT_b1_2))
-
-    print('[3/4] Pushing')
-    execute_assert('git push %s HEAD:refs/for/master' % git_url)
-
-    execute_assert('git checkout master')
-    execute_assert('git checkout -b b2')
-    set_content(FILE2, FILE2_b2)
-    set_content(FILE3, FILE3_b2)
-    execute_assert('git add .')
-    execute_assert('git commit -am ' + quote(COMMIT_b2))
-
-    print('[4/4] Pushing')
-    execute_assert('git checkout b2')
-    execute_assert('git push %s HEAD:refs/for/master' % git_url)
+    repo.checkout_branch('master')
+    repo.make_branch('b2')
+    repo.set_content(FILE2 = FILE2_b2,
+                     FILE3 = FILE3_b2)
+    repo.commit(COMMIT_b2)
+    repo.push_to_gerrit()
 
 if __name__ == '__main__':
-  setup()
+    setup()

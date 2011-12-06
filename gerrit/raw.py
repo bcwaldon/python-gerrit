@@ -1,8 +1,6 @@
 """
 Gerrit client operating on raw filesystem.
 """
-from __future__ import print_function
-
 import os.path
 import shutil
 

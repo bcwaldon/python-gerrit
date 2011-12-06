@@ -1,13 +1,14 @@
 
-import distutils.core
+from setuptools import setup
 
-distutils.core.setup(
+setup(
     name="gerrit",
     version="0.0.1",
     author="Brian Waldon",
     author_email="bcwaldon@gmail.com",
     url="https://github.com/bcwaldon/python-gerrit",
     description="Client library for interacting with the Gerrit JSONRPC API",
-    install_requires=['httplib2'],
+    install_requires=['httplib2', 'SQLAlchemy'],
+    tests_requires=['pytest'],
     packages=['gerrit'],
 )

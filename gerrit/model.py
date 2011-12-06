@@ -26,6 +26,16 @@ class BaseModel(object):
         value = getattr(self, key)
         return '<%s %s=%s>' % (self.__class__.__name__, key, value)
 
+class BaseIdModel(BaseModel):
+    def __hash__(self):
+        return hash(self._cmp_key())
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+
+        return self._cmp_key() == other._cmp_key()
+
 class User(BaseModel):
 
     attributes = ('user_id', 'name')
@@ -95,14 +105,15 @@ class Project(BaseModel):
 
 
 class Change(BaseModel):
-    attributes = ('id', 'sort_key', 'name', 'project_name')
+    attributes = ('id', 'sort_key', 'name', 'project_name', 'last_updated_on')
 
 
 class ChangeDetails(BaseModel):
     IN_PROGRESS = 'n'
 
     attributes = ('id', 'sort_key', 'project_name', 'name', 'message',
-                  'status', 'last_patchset_details', 'patchsets', 'messages')
+                  'status', 'last_patchset_details', 'patchsets', 'messages',
+                  'last_updated_on')
 
 
 class Message(BaseModel):

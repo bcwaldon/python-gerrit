@@ -9,6 +9,5 @@ setup(
     url="https://github.com/bcwaldon/python-gerrit",
     description="Client library for interacting with the Gerrit JSONRPC API",
     install_requires=['httplib2', 'SQLAlchemy'],
-    tests_requires=['pytest'],
     packages=['gerrit'],
 )

@@ -1,4 +1,6 @@
 
-from rpc import *
-from model import *
-from error import *
+from gerrit.rpc import Client
+
+from gerrit.error import GerritError, NotSignedInError,\
+                         AuthenticationError
+

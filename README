@@ -1,0 +1,58 @@
+python-gerrit
+=============
+
+
+python-gerrit is a Python interface to Gerrit, a code review system
+for Git.
+
+DISCLAIMER: Gerrit does not have an official API. This library is a product
+of reverse engineering.
+
+APIs exposed
+------------
+
+There are three APIs available in python-gerrit:
+
+    * rpc - basic JSON-RPC API over HTTP; it has the same functionality
+      as the standard Gerrit client.
+    * db - raw access to the database. It understandably needs more
+      privileges than simple HTTP.
+    * raw - direct access to the filesystem. It needs local access
+      to the Gerrit installation.
+
+Most use cases can be satisfied by JSON-RPC alone. There are some
+glaring ommisions in the functionality, though, so for things such as
+project creation you will need to use db/raw. Check documentation of
+corresponding modules for more.
+    
+
+Testing
+-------
+
+python-gerrit comes with a test suite. In order to run it, you need
+to have gerrit installed locally, with full access to its
+raw directory and database. Testing is managed by ``py.test``
+You can run it by executing::
+
+    py.test
+
+Tests expects the following environment variables to be set:
+
+    * GERRIT_PATH - path to a Gerrit installation
+    * GERRIT_DB - sqlalchemy URL to the Gerrit database
+    * GERRIT_GIT - URL to the Gerrit git repository
+    * GERRIT_URL - URL to the Gerrit HTTP server
+    * GERRIT_USERNAME - a user the suite with interact as
+
+Check that the provided user has all the privileges required to
+submit, vote, comment, and so on.
+
+Also, be sure your Gerrit installation has authentication method set
+to DEVELOPMENT_BECOME_ANY_ACCOUNT.
+
+
+Credits
+-------
+
+Brian Waldon
+Mike Hordecki

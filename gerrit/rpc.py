@@ -64,7 +64,7 @@ class Client(object):
         patchset = model.PatchSetId.coerce(patchset)
 
         _service = service.ChangeDetailService(self.connection)
-        data = _service.changeDetail(patchset)
+        data = _service.patchSetDetail(patchset)
         return decode.decode_patchset_details(data)
 
     def publish_review(self, patchset, comment):

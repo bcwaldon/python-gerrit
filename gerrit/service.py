@@ -66,6 +66,9 @@ class ChangeDetailService(Service):
     def changeDetail(self, change_id):
         return self._call('changeDetail', change_id.to_json())
 
+    def patchSetDetail(self, patchset_id):
+        return self._call('patchSetDetail', patchset_id.to_json(), None, None)
+
 class PatchDetailService(Service):
     def publishComments(self, patchset_id, comment, votes):
         return self._call('publishComments',

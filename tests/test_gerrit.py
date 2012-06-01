@@ -45,7 +45,7 @@ def test_projects():
 def test_changes():
     client = gerrit()
 
-    changes = client.changes(project = fixtures.TEST_PROJECT)
+    changes = client.changes(search={'project':fixtures.TEST_PROJECT})
     assert set(change.name for change in changes) == \
             set((first_para(fixtures.COMMIT_i),
                  first_para(fixtures.COMMIT_b1_2),
@@ -56,7 +56,7 @@ def test_change_details():
     client = gerrit()
 
     # We need to get the id at a cost of a slightly more brittle test
-    changes = client.changes(project = fixtures.TEST_PROJECT)
+    changes = client.changes(search={'project': fixtures.TEST_PROJECT})
     change = [ch for ch in changes if ch.name == first_para(fixtures.COMMIT_b2)][0]
 
     change = client.change_details(change)
@@ -70,7 +70,7 @@ def test_patchset_details():
     client = gerrit()
 
     # We need to get the id at a cost of a slightly more brittle test
-    changes = client.changes(project = fixtures.TEST_PROJECT)
+    changes = client.changes(search={'project': fixtures.TEST_PROJECT})
     change = [ch for ch in changes if ch.name == first_para(fixtures.COMMIT_b1_2)][0]
 
     change = client.change_details(change)
@@ -86,7 +86,7 @@ def test_review():
     REVIEW_COMMENT = "YES, THIS IS COMMENT"
 
     # We need to get the id at a cost of a slightly more brittle test
-    changes = client.changes(project = fixtures.TEST_PROJECT)
+    changes = client.changes(search={'project': fixtures.TEST_PROJECT})
     change = [ch for ch in changes if ch.name == first_para(fixtures.COMMIT_b2)][0]
 
     change = client.change_details(change)
@@ -101,7 +101,7 @@ def test_commenting():
     client = authenticated_gerrit()
 
     # We need to get the id at a cost of a slightly more brittle test
-    changes = client.changes(project = fixtures.TEST_PROJECT)
+    changes = client.changes(search={'project': fixtures.TEST_PROJECT})
     change = [ch for ch in changes if ch.name == first_para(fixtures.COMMIT_b2)][0]
 
     change = client.change_details(change)

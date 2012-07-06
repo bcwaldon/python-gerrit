@@ -11,7 +11,8 @@ from __future__ import print_function
 import pytest
 
 import fixtures
-from gerrit import Client, ChangeDetails, Patch, AuthenticationError
+from gerrit import Client, AuthenticaitonError
+from gerrit.model import ChangeDetails, Patch
 
 def setup_module():
     fixtures.setup()

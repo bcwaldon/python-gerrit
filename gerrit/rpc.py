@@ -34,17 +34,16 @@ class Client(object):
       else:
         raise error.UnknownAuthenticationMethodError()
         
-    def changes(self, status="open", project=None):
+    def changes(self, status="open", **search):
         result = []
-    
-        if isinstance(project, model.Project):
-          project = project.name
 
-        search = 'status: %s' % status
-        if project:
-            search += ' project:%s' % project
+        query = 'status:%s' % status
+
+        for key, value in search.iteritems():
+            query += ' %s:%s' % (key, value)
+
         _service = service.ChangeListService(self.connection)
-        for change in self._paginate(_service.allQueryNext, search):
+        for change in self._paginate(_service.allQueryNext, query):
             result.append(decode.decode_change(change))
 
         return result

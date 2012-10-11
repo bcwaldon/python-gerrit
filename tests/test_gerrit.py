@@ -11,22 +11,27 @@ from __future__ import print_function
 import pytest
 
 import fixtures
-from gerrit import Client, AuthenticaitonError
+from gerrit import Client, AuthenticationError
 from gerrit.model import ChangeDetails, Patch
+
 
 def setup_module():
     fixtures.setup()
 
+
 def gerrit():
     return Client(fixtures.GERRIT_URL)
 
+
 def authenticated_gerrit():
     client = gerrit()
-    client.authenticate(method = 'become', username = fixtures.USERNAME)
+    client.authenticate(method='become', username=fixtures.USERNAME)
     return client
+
 
 def first_line(text):
     return text.strip().split('\n')[0].strip()
+
 
 def first_para(text):
     lines = [line.strip() for line in text.strip().split('\n')]
@@ -37,28 +42,32 @@ def first_para(text):
         result.append(line)
     return ' '.join(result)
 
+
 def test_projects():
     client = gerrit()
 
     projects = client.projects()
     assert any(project.name == fixtures.TEST_PROJECT for project in projects)
 
+
 def test_changes():
     client = gerrit()
 
-    changes = client.changes(search={'project':fixtures.TEST_PROJECT})
+    changes = client.changes(search={'project': fixtures.TEST_PROJECT})
     assert set(change.name for change in changes) == \
             set((first_para(fixtures.COMMIT_i),
                  first_para(fixtures.COMMIT_b1_2),
                  first_para(fixtures.COMMIT_b2),))
     assert changes[0].project_name == fixtures.TEST_PROJECT
 
+
 def test_change_details():
     client = gerrit()
 
     # We need to get the id at a cost of a slightly more brittle test
     changes = client.changes(search={'project': fixtures.TEST_PROJECT})
-    change = [ch for ch in changes if ch.name == first_para(fixtures.COMMIT_b2)][0]
+    change = [ch for ch in changes
+                        if ch.name == first_para(fixtures.COMMIT_b2)][0]
 
     change = client.change_details(change)
     print(change)
@@ -67,12 +76,14 @@ def test_change_details():
     assert change.status == ChangeDetails.IN_PROGRESS
     assert len(change.messages) == 0
 
+
 def test_patchset_details():
     client = gerrit()
 
     # We need to get the id at a cost of a slightly more brittle test
     changes = client.changes(search={'project': fixtures.TEST_PROJECT})
-    change = [ch for ch in changes if ch.name == first_para(fixtures.COMMIT_b1_2)][0]
+    change = [ch for ch in changes
+                        if ch.name == first_para(fixtures.COMMIT_b1_2)][0]
 
     change = client.change_details(change)
     patchset = change.last_patchset_details
@@ -88,7 +99,8 @@ def test_review():
 
     # We need to get the id at a cost of a slightly more brittle test
     changes = client.changes(search={'project': fixtures.TEST_PROJECT})
-    change = [ch for ch in changes if ch.name == first_para(fixtures.COMMIT_b2)][0]
+    change = [ch for ch in changes
+                        if ch.name == first_para(fixtures.COMMIT_b2)][0]
 
     change = client.change_details(change)
     patchset = change.last_patchset_details
@@ -98,17 +110,20 @@ def test_review():
     assert len(change.messages) == 1
     assert change.messages[0].message.strip().endswith(REVIEW_COMMENT)
 
+
 def test_commenting():
     client = authenticated_gerrit()
 
     # We need to get the id at a cost of a slightly more brittle test
     changes = client.changes(search={'project': fixtures.TEST_PROJECT})
-    change = [ch for ch in changes if ch.name == first_para(fixtures.COMMIT_b2)][0]
+    change = [ch for ch in changes
+                        if ch.name == first_para(fixtures.COMMIT_b2)][0]
 
     change = client.change_details(change)
     patchset = change.last_patchset_details
     client.save_comment(patchset.patches[-1], 2, 'Hello!')
-    return #FIXME: actually do some testing here!
+    return  # FIXME: actually do some testing here!
+
 
 # skipping - if someone has any idea how to create a simple LDAP server,
 #            leave me a note
@@ -116,32 +131,31 @@ def _test_invalid_authentication():
     client = gerrit()
 
     with pytest.raises(AuthenticationError):
-        client.authenticate(method = 'user_pass',
-                            username = fixtures.USERNAME,
-                            password = fixtures.PASSWORD+'___')
+        client.authenticate(method='user_pass',
+                            username=fixtures.USERNAME,
+                            password=fixtures.PASSWORD + '___')
+
 
 # skipping - see note above
 def _test_authentication():
     client = gerrit()
 
-    client.authenticate(method = 'user_pass',
-                      username = fixtures.USERNAME,
-                      password = fixtures.PASSWORD)
+    client.authenticate(method='user_pass',
+                        username=fixtures.USERNAME,
+                        password=fixtures.PASSWORD)
+
 
 def test_account_without_signing_in():
     client = gerrit()
 
     assert client.account() is None
 
+
 def test_dev_authentication():
     client = gerrit()
 
     client.account()
-    client.authenticate(method = 'become',
-                      username = fixtures.USERNAME)
+    client.authenticate(method='become',
+                        username=fixtures.USERNAME)
 
     assert client.account().user_name == fixtures.USERNAME
-
-
-      
-

@@ -9,6 +9,7 @@ from StringIO import StringIO
 from ConfigParser import ConfigParser
 from gerrit.util import execute_assert
 
+
 class Client(object):
     def __init__(self, path):
         self.path = path
@@ -25,7 +26,7 @@ class Client(object):
         config.readfp(filelike)
         self.git_base_path = os.path.join(self.path,
                                           config.get('gerrit', 'basePath'))
-    
+
     def project_path(self, project):
         return os.path.join(self.git_base_path, project) + '.git'
 
@@ -36,7 +37,5 @@ class Client(object):
         shutil.rmtree(self.project_path(project))
 
     def create_project(self, project):
-        execute_assert('git %s init' % quote('--git-dir=' + \
+        execute_assert('git %s init' % quote('--git-dir=' +
                                              self.project_path(project)))
-        
-

@@ -7,8 +7,8 @@ It needs only HTTP access.
 from gerrit import model, error, decode, service
 from urlparse import urljoin
 
-class Client(object):
 
+class Client(object):
     def __init__(self, host):
         self.host = urljoin(host, 'gerrit/rpc')
         self.connection = service.Connection(self.host)
@@ -25,15 +25,15 @@ class Client(object):
                 current_page_size += 1
 
     def authenticate(self, method, **kwargs):
-      if method == 'user_pass':
-        _service = service.UserPassAuthService(self.connection)
-        _service.authenticate(kwargs['username'], kwargs['password'])
-      elif method == 'become':
-        _service = service.BecomeAuthService(self.connection)
-        _service.authenticate(kwargs['username'])
-      else:
-        raise error.UnknownAuthenticationMethodError()
-        
+        if method == 'user_pass':
+            _service = service.UserPassAuthService(self.connection)
+            _service.authenticate(kwargs['username'], kwargs['password'])
+        elif method == 'become':
+            _service = service.BecomeAuthService(self.connection)
+            _service.authenticate(kwargs['username'])
+        else:
+            raise error.UnknownAuthenticationMethodError()
+
     def changes(self, status="open", **search):
         result = []
 
@@ -72,7 +72,7 @@ class Client(object):
         patch = model.PatchId.coerce(patch)
 
         _service = service.PatchDetailService(self.connection)
-        _service.saveDraft(patch, line, message, timestamp = timestamp)
+        _service.saveDraft(patch, line, message, timestamp=timestamp)
 
     def projects(self):
         result = []
@@ -89,4 +89,3 @@ class Client(object):
             return decode.decode_account(_service.myAccount())
         except error.NotSignedInError:
             return None
-

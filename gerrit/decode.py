@@ -11,6 +11,7 @@ def decode_datetime(data):
 
 def decode_change(data):
     return model.Change(id=decode_change_id(data['id']),
+                        key_id=data['key']['id'],
                         sort_key=data['sortKey'],
                         name=data['subject'],
                         project_name=data['project']['key']['name'],

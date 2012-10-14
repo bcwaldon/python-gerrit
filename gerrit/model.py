@@ -109,7 +109,8 @@ class Project(BaseModel):
 
 
 class Change(BaseModel):
-    attributes = ('id', 'sort_key', 'name', 'project_name', 'last_updated_on')
+    attributes = ('id', 'key_id', 'sort_key', 'name', 'project_name',
+                  'last_updated_on')
 
 
 class ChangeDetails(BaseModel):

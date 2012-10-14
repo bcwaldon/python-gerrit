@@ -42,6 +42,40 @@ def decode_change_details(data):
         last_patchset_details=decode_patchset_details(data['currentDetail']),
         last_updated_on=decode_datetime(change['lastUpdatedOn']),
         status=change['status'],
+        reviews=[
+            decode_review(review) for review in data['approvals']
+        ],
+    )
+
+
+def decode_review(data):
+    return model.ChangeReview(
+        account_id=decode_account_id(data['account']),
+        approvals=[
+            decode_approval(approval) for approval in data['approvals']
+        ],
+    )
+
+
+def decode_approval(data):
+    return model.ChangeApproval(
+        change_open=['changeOpen'],
+        approval_key=decode_approval_key(data['key']),
+        value=data['value'],
+    )
+
+
+def decode_approval_key(data):
+    return model.ApprovalKey(
+        account_id=data['accountId'],
+        category_id=decode_category_id(data['categoryId']),
+        patchset_id=decode_patchset_id(data['patchSetId']),
+    )
+
+
+def decode_category_id(data):
+    return model.ApprovalCategory(
+        id=data['id'],
     )
 
 

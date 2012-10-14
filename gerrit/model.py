@@ -118,7 +118,7 @@ class ChangeDetails(BaseModel):
 
     attributes = ('id', 'sort_key', 'project_name', 'name', 'message',
                   'status', 'last_patchset_details', 'patchsets', 'messages',
-                  'last_updated_on')
+                  'last_updated_on', 'reviews')
 
 
 class Message(BaseModel):
@@ -153,3 +153,19 @@ class AccountId(BaseModel):
 
 class Account(BaseModel):
     attributes = ('id', 'user_name', 'full_name', 'email')
+
+
+class ChangeReview(BaseModel):
+    attributes = ('account_id', 'approvals')
+
+
+class ChangeApproval(BaseModel):
+    attributes = ('change_open', 'approval_key', 'value')
+
+
+class ApprovalKey(BaseModel):
+    attributes = ('account_id', 'category_id', 'patchset_id')
+
+
+class ApprovalCategory(BaseModel):
+    attributes = ('id')

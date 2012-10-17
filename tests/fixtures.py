@@ -63,6 +63,7 @@ FILE3_b2 = """
 third file
 """
 
+
 class ChangeCwd(object):
     def __init__(self, path):
         self.path = path
@@ -74,6 +75,7 @@ class ChangeCwd(object):
 
     def __exit__(self, *args):
         os.chdir(self.old_path)
+
 
 class TestGitRepo(object):
     def __init__(self, path, remote=None):
@@ -96,7 +98,7 @@ class TestGitRepo(object):
                 file.close()
                 self._execute('git', 'add', path)
 
-    def commit(self, message, amend = False):
+    def commit(self, message, amend=False):
         with ChangeCwd(self.path):
             if amend:
                 self._execute('git', 'commit', '--amend', '-m', message)
@@ -115,14 +117,16 @@ class TestGitRepo(object):
         with ChangeCwd(self.path):
             self._execute('git', 'push', self.remote, 'HEAD:refs/for/master')
 
+
 def set_content(path, content):
     open(path, 'w').write(content)
+
 
 def setup():
     # Recreating Gerrit project
     db_client = db.Client(GERRIT_DB)
     raw_client = raw.Client(GERRIT_PATH)
-    
+
     if db_client.project_exists(TEST_PROJECT):
         db_client.remove_project(TEST_PROJECT)
     if raw_client.project_exists(TEST_PROJECT):
@@ -136,27 +140,28 @@ def setup():
     repo.clear()
 
     # Adding some random commits
-    repo.set_content(FILE1 = FILE1_i,
-                     FILE2 = FILE2_i)
+    repo.set_content(FILE1=FILE1_i,
+                     FILE2=FILE2_i)
     repo.commit(COMMIT_i)
 
     repo.push_to_gerrit()
 
     repo.make_branch('b1')
-    repo.set_content(FILE1 = FILE1_b1)
+    repo.set_content(FILE1=FILE1_b1)
     repo.commit(COMMIT_b1)
     repo.push_to_gerrit()
 
-    repo.set_content(FILE1 = FILE1_b1_2)
-    repo.commit(COMMIT_b1_2, amend = True)
+    repo.set_content(FILE1=FILE1_b1_2)
+    repo.commit(COMMIT_b1_2, amend=True)
     repo.push_to_gerrit()
 
     repo.checkout_branch('master')
     repo.make_branch('b2')
-    repo.set_content(FILE2 = FILE2_b2,
-                     FILE3 = FILE3_b2)
+    repo.set_content(FILE2=FILE2_b2,
+                     FILE3=FILE3_b2)
     repo.commit(COMMIT_b2)
     repo.push_to_gerrit()
+
 
 if __name__ == '__main__':
     setup()

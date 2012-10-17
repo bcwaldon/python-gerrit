@@ -1,4 +1,3 @@
-
 class BaseModel(object):
     attributes = ()
 
@@ -26,6 +25,7 @@ class BaseModel(object):
         value = getattr(self, key)
         return '<%s %s=%s>' % (self.__class__.__name__, key, value)
 
+
 class BaseIdModel(BaseModel):
     def __hash__(self):
         return hash(self._cmp_key())
@@ -36,6 +36,7 @@ class BaseIdModel(BaseModel):
 
         return self._cmp_key() == other._cmp_key()
 
+
 class User(BaseModel):
 
     attributes = ('user_id', 'name')
@@ -45,6 +46,7 @@ class User(BaseModel):
             return NotImplemented
 
         return self.user_id == user.user_id
+
 
 class ChangeId(BaseModel):
     attributes = ('id',)
@@ -66,13 +68,14 @@ class ChangeId(BaseModel):
     def to_json(self):
         return {'id': self.id}
 
+
 class PatchSetId(BaseModel):
     attributes = ('id', 'change_id')
 
     @property
     def git_path(self):
-      change_id = str(self.change_id.id)
-      return 'refs/changes/%s/%s/%s' % (change_id[-2:], change_id, self.id)
+        change_id = str(self.change_id.id)
+        return 'refs/changes/%s/%s/%s' % (change_id[-2:], change_id, self.id)
 
     @staticmethod
     def coerce(obj):
@@ -86,6 +89,7 @@ class PatchSetId(BaseModel):
         return {'patchSetId': self.id,
                 'changeId': self.change_id.to_json()}
 
+
 class PatchId(BaseModel):
     attributes = ('path', 'patchset_id')
 
@@ -98,14 +102,15 @@ class PatchId(BaseModel):
     def to_json(self):
         return {'fileName': self.path,
                 'patchSetId': self.patchset_id.to_json()}
-    
+
 
 class Project(BaseModel):
     attributes = ('name', 'description')
 
 
 class Change(BaseModel):
-    attributes = ('id', 'sort_key', 'name', 'project_name', 'last_updated_on')
+    attributes = ('id', 'key_id', 'sort_key', 'name', 'project_name',
+                  'last_updated_on')
 
 
 class ChangeDetails(BaseModel):
@@ -113,7 +118,7 @@ class ChangeDetails(BaseModel):
 
     attributes = ('id', 'sort_key', 'project_name', 'name', 'message',
                   'status', 'last_patchset_details', 'patchsets', 'messages',
-                  'last_updated_on')
+                  'last_updated_on', 'reviews')
 
 
 class Message(BaseModel):
@@ -132,13 +137,9 @@ class Permission(BaseModel):
     attributes = ('id', 'values')
 
 
-
 class PatchSetPublishDetail(BaseModel):
     attributes = ('permissions', 'patchset_id')
 
-    @classmethod
-    def decode(cls, data):
-      from decoder import decode_patchset_id
 
 class Patch(BaseModel):
     MODIFIED = 'M'
@@ -152,3 +153,19 @@ class AccountId(BaseModel):
 
 class Account(BaseModel):
     attributes = ('id', 'user_name', 'full_name', 'email')
+
+
+class ChangeReview(BaseModel):
+    attributes = ('account_id', 'approvals')
+
+
+class ChangeApproval(BaseModel):
+    attributes = ('change_open', 'approval_key', 'value')
+
+
+class ApprovalKey(BaseModel):
+    attributes = ('account_id', 'category_id', 'patchset_id')
+
+
+class ApprovalCategory(BaseModel):
+    attributes = ('id')

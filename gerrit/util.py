@@ -7,6 +7,7 @@ from pipes import quote
 
 from gerrit import model
 
+
 class ExecutionError(Exception):
     def __init__(self, cmd, stdin, code, out, err):
         self.cmd = cmd,
@@ -26,16 +27,18 @@ err: {err}
 
 Execution = namedtuple('Execution', 'code out err')
 
+
 def execute(cmd, stdin=None):
     process = subprocess.Popen(cmd,
-                               shell = True,
-                               stdin = subprocess.PIPE \
-                                        if stdin is not None else None,
-                               stdout = subprocess.PIPE,
-                               stderr = subprocess.PIPE)
+                               shell=True,
+                               stdin=(subprocess.PIPE
+                                        if stdin is not None else None),
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
 
     out, err = process.communicate(stdin)
     return Execution(process.returncode, out, err)
+
 
 def execute_assert(cmd, stdin=None):
     ret = execute(cmd, stdin)
@@ -48,10 +51,12 @@ def execute_assert(cmd, stdin=None):
         err=ret.err)
     return ret
 
+
 def reset_dir(path):
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
+
 
 def download_patchset(patchset, target, repo_url):
     patchset = model.PatchSetId.coerce(patchset)
@@ -70,6 +75,3 @@ def download_patchset(patchset, target, repo_url):
 
     finally:
         os.chdir(cwd)
-  
-
-

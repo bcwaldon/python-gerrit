@@ -1,6 +1,6 @@
+from gerrit import rpc, error
 
-from gerrit.rpc import Client
-
-from gerrit.error import GerritError, NotSignedInError,\
-                         AuthenticationError
-
+Client = rpc.Client
+GerritError = error.GerritError
+NotSignedInError = error.NotSignedInError
+AuthenticationError = error.AuthenticationError

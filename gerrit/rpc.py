@@ -9,8 +9,8 @@ from urlparse import urljoin
 
 
 class Client(object):
-    def __init__(self, host):
-        self.host = urljoin(host, 'gerrit/rpc')
+    def __init__(self, host, rpc_path='gerrit/rpc'):
+        self.host = urljoin(host, rpc_path)
         self.connection = service.Connection(self.host)
 
     def _paginate(self, method, *args, **kwargs):

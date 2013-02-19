@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="gerrit",
-    version="0.0.1",
+    version="0.0.2",
     author="Brian Waldon",
     author_email="bcwaldon@gmail.com",
     url="https://github.com/bcwaldon/python-gerrit",

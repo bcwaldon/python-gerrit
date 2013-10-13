@@ -7,12 +7,21 @@ from error import AuthenticationError, GerritError, NotSignedInError
 
 
 class Connection(object):
-    def __init__(self, host):
+    """Create a connection to a remote gerrit
+
+    Required arguments:
+    host -- remote host url.  usually like https://gerrit-host/gerrit/rpc
+
+    Keyword arguments:
+    verify -- Check SSL certificates for https connections (default True)
+    """
+    def __init__(self, host, verify=True):
         self.host = host
         self.cookie = ''
         self.xsrf_key = None
 
-        self.http = httplib2.Http()
+        self.http = httplib2.Http(disable_ssl_certificate_validation=
+                                  not verify)
         self.http.follow_redirects = False
         self.http.follow_all_redirects = False
 
@@ -35,6 +44,18 @@ class Connection(object):
 
 
 class Service(object):
+    """Geritt parent service object
+
+    Subclasses implement various operations on the remove gerrit
+    server.
+
+    Example of use:
+
+    import gerrit
+    connection = gerrit.service.Connection('https://host/gerrit/rpc')
+    service = gerrit.service.ChangeListService(connection)
+    changes = service.allQueryNext(search="status:open project:foobar", page_size=50)
+    """
     def __init__(self, connection):
         self.connection = connection
         self.url = urljoin(self.connection.host + '/', self.__class__.__name__)
